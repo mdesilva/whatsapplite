@@ -4,6 +4,8 @@ import { KeyboardAvoidingView, Dimensions, Keyboard} from 'react-native';
 import { Form, Item, Input, Icon } from "native-base";
 
 import { connect } from "react-redux";
+import api from '../api';
+import axios from 'axios';
 
 class NewMessage extends React.Component {
     
@@ -13,8 +15,8 @@ class NewMessage extends React.Component {
 
     state = {
         keyboardOffset: 200,
-        receipient: "emslade23@bu.edu",
-        message: "test"
+        receipientUsername: "",
+        message: ""
     }
 
     componentDidMount() {
@@ -29,11 +31,21 @@ class NewMessage extends React.Component {
         this.setState({keyboardOffset: 200})
     }
 
-    sendMessage(){
-        //send the message, and then return to messages list. Eventually, go right to the conversation page with the receipient
-        //receipient must be lowercased
-        this.props.socket.startNewConversation(this.state.receipient, this.state.message);
-        this.props.navigation.navigate("MessageList");
+    async sendMessage() {
+        try {
+            const response = await axios.get(api.getUserId, {
+                params: {
+                    username: this.state.receipientUsername
+                }
+            });
+            if (response.data.userId) {
+                this.props.socket.newMessage(response.data.userId, this.state.message);
+                this.props.navigation.navigate("MessageList");
+            }
+        }
+        catch (error) {
+            alert("Invalid receipient. Please try again");
+        }
     }
 
     render() {
@@ -45,7 +57,7 @@ class NewMessage extends React.Component {
                     <Input
                     placeholder="Receipient"
                     returnKeyType="done"
-                    onChangeText={(text) => this.setState({receipient: text.toLowerCase()})}
+                    onChangeText={(text) => this.setState({receipientUsername: text.toLowerCase()})}
                     />
                     </Item>
                     <Item style={{marginTop: height - this.state.keyboardOffset}}>

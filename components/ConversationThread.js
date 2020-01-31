@@ -81,7 +81,6 @@ class ConversationThread extends React.Component {
 
     render() {
         return (
-        
         <GiftedChat
         messages={this.props.messages}
         alignTop={true}

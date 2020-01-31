@@ -1,16 +1,17 @@
 import io from './socket.io';
-const apiBaseUrl = "155.41.125.220";
+const apiBaseUrl = "34.238.245.189";
 
 class Socket {
     socket = null;
 
     constructor(token){
-        this.socket = io(`http://${apiBaseUrl}:3010`);
+        this.socket = io(`http://${apiBaseUrl}:3050`);
         this.user = token;
         this.socket.emit('newConnection', {token: token});
     }
 
     newMessage(receipient, message){
+        console.log("emit");
         this.socket.emit('newMessage', {senderToken: this.user, receiverId: receipient, message: message});
     }
 
